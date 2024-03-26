@@ -1,6 +1,7 @@
+<base target="_blank">
 # Veeam Backup MP
 
-[![image](Speaker_Social_asset_2.png)](https://scomathon.com/scomathon-2024/){:target="_blank"}
+[![image](Speaker_Social_asset_2.png)](https://scomathon.com/scomathon-2024/)
 
 ## Session Info
 *	Session time: 17:15 GMT/ 12.15 ET May 22, 2024
@@ -17,7 +18,7 @@
 ## Files
 * [Notes](SCOMathon2024.txt)  
 * MP File [Custom.Veeam.Backups.xml](Custom.Veeam.Backups.xml)
-* [MP Doc html file](SCOMathon2024-MPdoc.html){:target="_blank"}
+* [MP Doc html file](SCOMathon2024-MPdoc.html)
 * [MP Doc via Browser](http://htmlpreview.github.io/?https://github.com/dsmith14w/VeeamBackupMP/blob/main/SCOMathon2024-MPdoc.html)
 * [MP xlsx doc](https://github.com/dsmith14w/VeeamBackupMP/blob/main/Custom.Veeam.Backups%2024.2.16.60%20Full%20Report.xlsx)
 
