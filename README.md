@@ -1,7 +1,9 @@
 
 # Veeam Backup MP
 
-[![image](Speaker_Social_asset_2.png)](https://scomathon.com/scomathon-2024/)
+<!-- [![image](Speaker_Social_asset_2.png)](https://scomathon.com/scomathon-2024/ )  -->
+<a href="https://scomathon.com/scomathon-2024/" target="_blank">
+ <img alt="alternate_text" src="Speaker_Social_asset_2.png" width="600" height="400"> </a>
 
 ## Session Info
 *	Session time: 17:15 GMT/ 12.15 ET May 22, 2024
