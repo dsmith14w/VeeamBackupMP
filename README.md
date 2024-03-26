@@ -15,7 +15,8 @@
 ## Files
 * [Notes](SCOMathon2024.txt)  
 * MP File [Custom.Veeam.Backups.xml](Custom.Veeam.Backups.xml)
-* [MP html doc](SCOMathon2024-MPdoc.html)  
+* [MP Doc html file](SCOMathon2024-MPdoc.html)
+* [MP Doc via Browser](http://htmlpreview.github.io/?https://github.com/dsmith14w/VeeamBackupMP/blob/main/SCOMathon2024-MPdoc.html)
 * [MP xlsx doc](https://github.com/dsmith14w/VeeamBackupMP/blob/main/Custom.Veeam.Backups%2024.2.16.60%20Full%20Report.xlsx)
 
 ---
