@@ -78,18 +78,18 @@
 - Why we created our own MP  
 	- At one time we had the Veeam Backup MP when it was included with what we purchased  
 	- This changed and the solution was expensive  
-	- The solution which included the MP included software we did not need  
+	- The solution which included the MP also included software we did not need  
 	- Purchase of the MP only was not an option  
 	   Monitoring of Veeam backups was needed in our organization  
 - Method of development  
 	- We reviewed the existing Veeam Backup MP  
 	- We reviewed our organizations use of the product  
-  - Discussion with Veeam Backup staff of what to monitor  
+  	- Discussion with Veeam Backup staff of what to monitor  
 	- Veeam Backup staff created a list of items that they would like to be monitored  
 	- Worked with the Veeam Backup team to design a custom MP to suite our needs  
 - What we chose to discover and monitor  
 	- The design needed to be flexible to add additional items as needed  
-	- Classes and discoiveries bassed on services for applications installed (Registry)  
+	- Classes and discoveries based on services for applications installed (Registry)  
 	- Veeam Backup SQL servers discovery by script -OR- Group based on server naming convention  
 	- Classes and discoveries based on backup type for jobs (Script)  
 	- Monitor Services for Backup Server, Enterprise Manager, Proxy Server, SQL server  
