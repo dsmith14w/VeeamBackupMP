@@ -16,7 +16,7 @@
 * [Notes](SCOMathon2024.txt)  
 * MP File [Custom.Veeam.Backups.xml](Custom.Veeam.Backups.xml)
 * [MP html doc](SCOMathon2024-MPdoc.html)  
-* [MP xlsx doc](Custom.Veeam.Backups 24.2.16.60%20Full%20Report.xlsx)  
+* [MP xlsx doc](https://github.com/dsmith14w/VeeamBackupMP/blob/main/Custom.Veeam.Backups%2024.2.16.60%20Full%20Report.xlsx)
 
 ---
 
@@ -42,28 +42,31 @@
 - Static_ViProxyTransportType
    -  Get-WmiObject -Namespace "root\VeeamBS" -ClassName  Static_ViProxyTransportType -ComputerName "$ComputerName" | select Type, DisplayName   
 ---
-Job Type (Get-WmiObject -Namespace "root\VeeamBS" -ClassName  Static_JobTypeInfo -ComputerName "$ComputerName" |select Type, DisplayName)  
-   -1: SureBackupJob
+**Job Typesw**
+~~~
+   -1: SureBackupJob  
     0: Backup Job *
-    1: Replication Job 
-    2: Backup Copy Job 
-    8: Quick Migration Job
-   24: File to Tape Backup Job
-   28: Backup to Tape Job
-   51: Backup Copy Job  * (File Copy Jobs)
-   52: SQL Log Backup Job
-   54: Oracle Log Backup Job
-   60: Replication Job *
-  202: Failover Plan
-12000: Agent Job
-12002: Agent Policy
-12003: Agent Job   
-   63: Simple Backup Copy Worker Job
-   65: Simple Backup Copy Job
-13000: NAS Backup Job 
-13003: NAS Backup Copy
+    1: Replication Job   
+    2: Backup Copy Job   
+    8: Quick Migration Job  
+   24: File to Tape Backup Job  
+   28: Backup to Tape Job  
+   51: Backup Copy Job  * (File Copy Jobs)  
+   52: SQL Log Backup Job  
+   54: Oracle Log Backup Job  
+   60: Replication Job *  
+  202: Failover Plan  
+12000: Agent Job  
+12002: Agent Policy  
+12003: Agent Job     
+   63: Simple Backup Copy Worker Job  
+   65: Simple Backup Copy Job  
+13000: NAS Backup Job   
+13003: NAS Backup Copy  
  4000: linux agent job - swallowing
-* Items the MP discovers (0, 1, 2)
+~~~
+\* Items the MP discovers (0, 51, 60)
+  - Get-WmiObject -Namespace "root\VeeamBS" -ClassName  Static_JobTypeInfo -ComputerName "$ComputerName" |select Type, DisplayName
 
 ## Slides
 - Why we created our own MP  
