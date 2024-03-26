@@ -76,7 +76,7 @@
 
 ## Slides
 - Why we created our own MP  
-	- At one time we had the Veeam Backup MP when it was inculded with what we purchased  
+	- At one time we had the Veeam Backup MP when it was included with what we purchased  
 	- This changed and the solution was expensive  
 	- The solution which included the MP included software we did not need  
 	- Purchase of the MP only was not an option  
