@@ -1,5 +1,7 @@
 # Veeam Backup MP
 
+[![image](Speaker_Social_asset_2.png)](https://scomathon.com/scomathon-2024/)
+
 ## Session Info
 *	Session time: 17:15 GMT/ 12.15 ET May 22, 2024
 *	Will present live
