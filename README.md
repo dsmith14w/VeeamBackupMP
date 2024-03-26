@@ -42,7 +42,7 @@
 - Static_ViProxyTransportType
    -  Get-WmiObject -Namespace "root\VeeamBS" -ClassName  Static_ViProxyTransportType -ComputerName "$ComputerName" | select Type, DisplayName   
 ---
-**Job Typesw**
+**Job Types**
 ~~~
    -1: SureBackupJob  
     0: Backup Job *
