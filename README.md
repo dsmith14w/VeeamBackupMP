@@ -13,11 +13,13 @@
 *	Event itself: 22nd May 2024
 
 ## Files
-*       Notes: SCOMathon2024.txt
-*     MP File: Custom.Veeam.Backups.xml
-* MP html doc: SCOMathon2024-MPdoc.html
-* MP xlsx doc: Custom.Veeam.Backups 24.2.16.60 Full Report.xlsx
+* [Notes](SCOMathon2024.txt)  
+* MP File [Custom.Veeam.Backups.xml](Custom.Veeam.Backups.xml)
+* [MP html doc](SCOMathon2024-MPdoc.html)  
+* [MP xlsx doc](Custom.Veeam.Backups 24.2.16.60 Full Report.xlsx)  
+
 ---
+
 ## WMI 
  - WMI queries to root/VeeamBS  
  - Get-WmiObject -Namespace root/VeeamBS -ComputerName $ComputerName -List  
