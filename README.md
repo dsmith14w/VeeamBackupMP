@@ -1,7 +1,7 @@
 # Veeam Backup MP
 
 ## Session Info
-*	Session time: 17:15 GMT/ 12.15 ET
+*	Session time: 17:15 GMT/ 12.15 ET May 22, 2024
 *	Will present live
 *	Title: Veeam Backup monitoring for 2024
 *	Description: Veeam Backup is widely deployed and used by customers of SCOM, yet there is no Management Pack from Veeam which can be a bit of a blind spot for SCOM. David Smith from Wellspan takes us through his new and free community MP for exactly this purpose. From alerts when jobs fail to backup server health, this MP has you covered.
