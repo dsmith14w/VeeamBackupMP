@@ -1,4 +1,3 @@
-<base target="_blank">
 
 # Veeam Backup MP
 
