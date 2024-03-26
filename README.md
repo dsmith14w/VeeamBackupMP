@@ -1,4 +1,5 @@
 <base target="_blank">
+
 # Veeam Backup MP
 
 [![image](Speaker_Social_asset_2.png)](https://scomathon.com/scomathon-2024/)
