@@ -23,6 +23,7 @@
 * [MP Doc html file](SCOMathon2024-MPdoc.html)
 * [MP Doc via Browser](http://htmlpreview.github.io/?https://github.com/dsmith14w/VeeamBackupMP/blob/main/SCOMathon2024-MPdoc.html)
 * [MP xlsx doc](https://github.com/dsmith14w/VeeamBackupMP/blob/main/Custom.Veeam.Backups%2024.2.16.60%20Full%20Report.xlsx)
+* [Powerpoint for SCOMathon 2024](https://github.com/dsmith14w/VeeamBackupMP/blob/main/SCOMathon%202024%20PowerPoint%20Template%20D%20Smith%20Example.pptx)
 
 ---
 
