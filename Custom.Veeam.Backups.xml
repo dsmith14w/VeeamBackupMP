@@ -3,7 +3,7 @@
 	<Manifest>
 		<Identity>
 			<ID>Custom.Veeam.Backups</ID>
-			<Version>24.2.16.60</Version>
+			<Version>24.2.16.61</Version>
 		</Identity>
 		<Name>Custom Veeam Backups</Name>
 		<References>
@@ -116,7 +116,7 @@
 					<Property ID="Type" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
 					<Property ID="VmwareToolsQuiesceEnabled" Type="bool" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
 				</ClassType>
-				<ClassType ID="Custom.Veeam.Backups.vbkpSQLServer.Class" Comment="&lt;Silect&gt;&lt;Op&gt;Updated&lt;/Op&gt;&lt;User&gt;YHSMASTER\dsmith14admin&lt;/User&gt;&lt;Previous/&gt;&lt;LastModified&gt;2024-03-25 16:55:00Z&lt;/LastModified&gt;&lt;/Silect&gt;" Accessibility="Public" Abstract="false" Base="Windows!Microsoft.Windows.ComputerRole" Hosted="true" Singleton="false" Extension="false">
+				<ClassType ID="Custom.Veeam.Backups.VeeamSQLServer.Class" Comment="&lt;Silect&gt;&lt;Op&gt;Updated&lt;/Op&gt;&lt;User&gt;YHSMASTER\dsmith14admin&lt;/User&gt;&lt;Previous/&gt;&lt;LastModified&gt;2024-03-25 16:55:00Z&lt;/LastModified&gt;&lt;/Silect&gt;" Accessibility="Public" Abstract="false" Base="Windows!Microsoft.Windows.ComputerRole" Hosted="true" Singleton="false" Extension="false">
 					<Property ID="Description" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
 					<Property ID="DisplayName" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="256" MinLength="0" Required="false" Scale="0" />
 					<Property ID="ImagePath" Type="string" AutoIncrement="false" Key="false" CaseSensitive="false" MaxLength="512" MinLength="0" Required="false" Scale="0" />
@@ -149,7 +149,7 @@
 							<RelationshipClass>$MPElement[Name="SCIG!Microsoft.SystemCenter.InstanceGroupContainsEntities"]$</RelationshipClass>
 						</MembershipRule>
 						<MembershipRule>
-							<MonitoringClass>$MPElement[Name="Custom.Veeam.Backups.vbkpSQLServer.Class"]$</MonitoringClass>
+							<MonitoringClass>$MPElement[Name="Custom.Veeam.Backups.VeeamSQLServer.Class"]$</MonitoringClass>
 							<RelationshipClass>$MPElement[Name="SCIG!Microsoft.SystemCenter.InstanceGroupContainsEntities"]$</RelationshipClass>
 						</MembershipRule>
 					</MembershipRules>
@@ -360,135 +360,6 @@ $momapi.LogScriptEvent($ScriptName,$EventID,0,"`nScript Completed. `nRuntime: ($
 					<StrictErrorHandling>false</StrictErrorHandling>
 				</DataSource>
 			</Discovery>
-			<Discovery ID="Custom.Veeam.Backups.vbkpSQLServer.Class.Discovery" Comment="&lt;Silect&gt;&lt;Op&gt;Edited&lt;/Op&gt;&lt;User&gt;YHSMASTER\dsmith14admin&lt;/User&gt;&lt;Previous&gt;Frequency=10 minutes&lt;/Previous&gt;&lt;LastModified&gt;2024-03-25 18:28:32Z&lt;/LastModified&gt;&lt;/Silect&gt;" Enabled="true" Target="Windows!Microsoft.Windows.OperatingSystem" ConfirmDelivery="false" Remotable="true" Priority="Normal">
-				<Category>Discovery</Category>
-				<DiscoveryTypes>
-					<DiscoveryClass TypeID="Custom.Veeam.Backups.vbkpSQLServer.Class">
-						<Property TypeID="Custom.Veeam.Backups.vbkpSQLServer.Class" PropertyID="Description" />
-						<Property TypeID="Custom.Veeam.Backups.vbkpSQLServer.Class" PropertyID="DisplayName" />
-						<Property TypeID="Custom.Veeam.Backups.vbkpSQLServer.Class" PropertyID="ImagePath" />
-						<Property TypeID="Custom.Veeam.Backups.vbkpSQLServer.Class" PropertyID="ObjectName" />
-						<Property TypeID="System!System.ConfigItem" PropertyID="ObjectStatus" />
-						<Property TypeID="System!System.ConfigItem" PropertyID="AssetStatus" />
-						<Property TypeID="System!System.ConfigItem" PropertyID="Notes" />
-						<Property TypeID="System!System.Entity" PropertyID="DisplayName" />
-					</DiscoveryClass>
-				</DiscoveryTypes>
-				<DataSource ID="DS" TypeID="Windows!Microsoft.Windows.TimedPowerShell.DiscoveryProvider">
-					<IntervalSeconds>86400</IntervalSeconds>
-					<SyncTime></SyncTime>
-					<ScriptName>vbkpSQLServer.ps1</ScriptName>
-					<ScriptBody>param ($sourceId, $managedEntityId, $computerName)
-
-# Manual Testing section - put stuff here for manually testing script - typically parameters:
-#=================================================================================
-# $sourceId = '{00000000-0000-0000-0000-000000000000}'
-# $managedEntityId = '{00000000-0000-0000-0000-000000000000}'
-# $computerName = "device.domain.com"
-#=================================================================================
-
-# Constants section - modify stuff here:
-#=================================================================================
-# ScriptName should be the same as the ID of the module that the script is contained in
-$ScriptName = "VeeamBackupSqlServer.ps1" 
-$EventID = "3209"
-
-# Starting Script section - All scripts get this 
-#=================================================================================
-# Gather the start time of the script
-$StartTime = Get-Date
-#Set variable to be used in logging events
-$whoami = whoami
-# Load MOMScript API
-$momapi = New-Object -comObject MOM.ScriptAPI
-#Log script event that we are starting task
-$momapi.LogScriptEvent($ScriptName,$EventID,0,"`nScript is starting. `nRunning as ($whoami).`n Computer Name: $computerName")
-#=================================================================================
-
-# Discovery Script section - Discovery scripts get this
-#=================================================================================
-# Load SCOM Discovery module
-$DiscoveryData = $momapi.CreateDiscoveryData(0,$SourceId,$ManagedEntityId)
-#=================================================================================
-
-# Begin MAIN script section
-#=================================================================================
-
-$SQLServer=$computerName
-$SQLDB="master"
-
-$sqlquery="select name from sys.databases"
-
-$Connection = New-Object System.Data.SQLClient.SQLConnection
-$Connection.ConnectionString = "server='$SQLServer';database='$SQLDB';trusted_connection=false; integrated security='true'"
-try {
-    $connection.Open()
-    $command = $Connection.CreateCommand()
-    $command.CommandText = $sqlquery
-
-    $DtTable = New-Object "System.Data.Datatable"
-    $result = $command.ExecuteReader()
-    $DtTable.Load($result)
-    #$Result=$DtTable 
-    $momapi.LogScriptEvent($ScriptName,$EventID,0,"`nVeeamBackup database found")
-
-} 
-catch {
-	$momapi.LogScriptEvent($ScriptName,$EventID,0,"`nVeeamBackup database not found")
-	return
-}
-
-if ($DtTable.Name -contains "VeeamBackup") {
-    "Found VeeamBackup Database"
-    $entity =  $ComputerName +"_VeeamBackup" 
-    # Discovery Script section - Discovery scripts get this       
-    $instance = $DiscoveryData.CreateClassInstance("$MPElement[Name='Custom.Veeam.Backups.vbkpSQLServer.Class']$")
-    $instance.AddProperty("$MPElement[Name='Windows!Microsoft.Windows.Computer']/PrincipalName$", $ComputerName)
-
-    $instance.AddProperty("$MPElement[Name='Custom.Veeam.Backups.vbkpSQLServer.Class']/ImagePath$", $StartTime.ToString())
-    $instance.AddProperty("$MPElement[Name='Custom.Veeam.Backups.vbkpSQLServer.Class']/Description$", "VeeamBackup SQL Server")
-    $instance.AddProperty("$MPElement[Name='Custom.Veeam.Backups.vbkpSQLServer.Class']/DisplayName$", $ComputerName)
-    $instance.AddProperty("$MPElement[Name='Custom.Veeam.Backups.vbkpSQLServer.Class']/ObjectName$", $entity)
-
-    $instance.AddProperty("$MPElement[Name='System!System.Entity']/DisplayName$", $entity)
-    $DiscoveryData.AddInstance($instance)
-    $momapi.LogScriptEvent($ScriptName,$EventID,0,"`nAdded instance: $entity at $($StartTime.ToString())")
-} else {
-    "VeeamBackup not found"
-}
-
-$DiscoveryData
-# Return Discovery Bag to the command line for testing (does not work from ISE)
-# $momapi.Return($DiscoveryData)
-
-#=================================================================================
-# End MAIN script section
-#=================================================================================
-#Log an event for script ending and total execution time.
-$EndTime = Get-Date
-$ScriptTime = ($EndTime - $StartTime).TotalSeconds
-$momapi.LogScriptEvent($ScriptName,$EventID,0,"`nScript Completed. `nRuntime: ($ScriptTime) seconds.")
-#=================================================================================
-# End of script
-</ScriptBody>
-					<Parameters>
-						<Parameter>
-							<Name>sourceId</Name>
-							<Value>$MPElement$</Value>
-						</Parameter>
-						<Parameter>
-							<Name>managedEntityId</Name>
-							<Value>$Target/Id$</Value>
-						</Parameter>
-						<Parameter>
-							<Name>computerName</Name>
-							<Value>$Target/Host/Property[Type="Windows!Microsoft.Windows.Computer"]/PrincipalName$</Value>
-						</Parameter>
-					</Parameters>
-					<TimeoutSeconds>300</TimeoutSeconds>
-					<StrictErrorHandling>false</StrictErrorHandling>
-				</DataSource>
-			</Discovery>
 			<Discovery ID="Custom.Veeam.Backups.VeeamBackupSvc.Registry.Class.Discovery" Comment="&lt;Silect&gt;&lt;Op&gt;Edited&lt;/Op&gt;&lt;User&gt;David Smith&lt;/User&gt;&lt;Previous&gt;DisplayName=Custom VeeamBackupSvc Registry Class Discovery&lt;/Previous&gt;&lt;LastModified&gt;2023-09-27 15:32:18Z&lt;/LastModified&gt;&lt;/Silect&gt;" Enabled="true" Target="Windows!Microsoft.Windows.OperatingSystem" ConfirmDelivery="false" Remotable="true" Priority="Normal">
 				<Category>Discovery</Category>
 				<DiscoveryTypes>
@@ -669,6 +540,135 @@ $momapi.LogScriptEvent($ScriptName,$EventID,0,"`nScript Completed. `nRuntime: ($
 							</ValueExpression>
 						</SimpleExpression>
 					</Expression>
+				</DataSource>
+			</Discovery>
+			<Discovery ID="Custom.Veeam.Backups.VeeamSQLServer.Class.Discovery" Comment="&lt;Silect&gt;&lt;Op&gt;Edited&lt;/Op&gt;&lt;User&gt;YHSMASTER\dsmith14admin&lt;/User&gt;&lt;Previous&gt;Frequency=10 minutes&lt;/Previous&gt;&lt;LastModified&gt;2024-03-25 18:28:32Z&lt;/LastModified&gt;&lt;/Silect&gt;" Enabled="true" Target="Windows!Microsoft.Windows.OperatingSystem" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+				<Category>Discovery</Category>
+				<DiscoveryTypes>
+					<DiscoveryClass TypeID="Custom.Veeam.Backups.VeeamSQLServer.Class">
+						<Property TypeID="Custom.Veeam.Backups.VeeamSQLServer.Class" PropertyID="Description" />
+						<Property TypeID="Custom.Veeam.Backups.VeeamSQLServer.Class" PropertyID="DisplayName" />
+						<Property TypeID="Custom.Veeam.Backups.VeeamSQLServer.Class" PropertyID="ImagePath" />
+						<Property TypeID="Custom.Veeam.Backups.VeeamSQLServer.Class" PropertyID="ObjectName" />
+						<Property TypeID="System!System.ConfigItem" PropertyID="ObjectStatus" />
+						<Property TypeID="System!System.ConfigItem" PropertyID="AssetStatus" />
+						<Property TypeID="System!System.ConfigItem" PropertyID="Notes" />
+						<Property TypeID="System!System.Entity" PropertyID="DisplayName" />
+					</DiscoveryClass>
+				</DiscoveryTypes>
+				<DataSource ID="DS" TypeID="Windows!Microsoft.Windows.TimedPowerShell.DiscoveryProvider">
+					<IntervalSeconds>86400</IntervalSeconds>
+					<SyncTime></SyncTime>
+					<ScriptName>VeeamSQLServer.ps1</ScriptName>
+					<ScriptBody>param ($sourceId, $managedEntityId, $computerName)
+
+# Manual Testing section - put stuff here for manually testing script - typically parameters:
+#=================================================================================
+# $sourceId = '{00000000-0000-0000-0000-000000000000}'
+# $managedEntityId = '{00000000-0000-0000-0000-000000000000}'
+# $computerName = "device.domain.com"
+#=================================================================================
+
+# Constants section - modify stuff here:
+#=================================================================================
+# ScriptName should be the same as the ID of the module that the script is contained in
+$ScriptName = "VeeamBackupSqlServer.ps1" 
+$EventID = "3209"
+
+# Starting Script section - All scripts get this 
+#=================================================================================
+# Gather the start time of the script
+$StartTime = Get-Date
+#Set variable to be used in logging events
+$whoami = whoami
+# Load MOMScript API
+$momapi = New-Object -comObject MOM.ScriptAPI
+#Log script event that we are starting task
+$momapi.LogScriptEvent($ScriptName,$EventID,0,"`nScript is starting. `nRunning as ($whoami).`n Computer Name: $computerName")
+#=================================================================================
+
+# Discovery Script section - Discovery scripts get this
+#=================================================================================
+# Load SCOM Discovery module
+$DiscoveryData = $momapi.CreateDiscoveryData(0,$SourceId,$ManagedEntityId)
+#=================================================================================
+
+# Begin MAIN script section
+#=================================================================================
+
+$SQLServer=$computerName
+$SQLDB="master"
+
+$sqlquery="select name from sys.databases"
+
+$Connection = New-Object System.Data.SQLClient.SQLConnection
+$Connection.ConnectionString = "server='$SQLServer';database='$SQLDB';trusted_connection=false; integrated security='true'"
+try {
+    $connection.Open()
+    $command = $Connection.CreateCommand()
+    $command.CommandText = $sqlquery
+
+    $DtTable = New-Object "System.Data.Datatable"
+    $result = $command.ExecuteReader()
+    $DtTable.Load($result)
+    #$Result=$DtTable 
+    $momapi.LogScriptEvent($ScriptName,$EventID,0,"`nVeeamBackup database found")
+
+} 
+catch {
+	$momapi.LogScriptEvent($ScriptName,$EventID,0,"`nVeeamBackup database not found")
+	return
+}
+
+if ($DtTable.Name -contains "VeeamBackup") {
+    "Found VeeamBackup Database"
+    $entity =  $ComputerName +"_VeeamBackup" 
+    # Discovery Script section - Discovery scripts get this       
+    $instance = $DiscoveryData.CreateClassInstance("$MPElement[Name='Custom.Veeam.Backups.VeeamSQLServer.Class']$")
+    $instance.AddProperty("$MPElement[Name='Windows!Microsoft.Windows.Computer']/PrincipalName$", $ComputerName)
+
+    $instance.AddProperty("$MPElement[Name='Custom.Veeam.Backups.VeeamSQLServer.Class']/ImagePath$", $StartTime.ToString())
+    $instance.AddProperty("$MPElement[Name='Custom.Veeam.Backups.VeeamSQLServer.Class']/Description$", "VeeamBackup SQL Server")
+    $instance.AddProperty("$MPElement[Name='Custom.Veeam.Backups.VeeamSQLServer.Class']/DisplayName$", $ComputerName)
+    $instance.AddProperty("$MPElement[Name='Custom.Veeam.Backups.VeeamSQLServer.Class']/ObjectName$", $entity)
+
+    $instance.AddProperty("$MPElement[Name='System!System.Entity']/DisplayName$", $entity)
+    $DiscoveryData.AddInstance($instance)
+    $momapi.LogScriptEvent($ScriptName,$EventID,0,"`nAdded instance: $entity at $($StartTime.ToString())")
+} else {
+    "VeeamBackup not found"
+}
+
+$DiscoveryData
+# Return Discovery Bag to the command line for testing (does not work from ISE)
+# $momapi.Return($DiscoveryData)
+
+#=================================================================================
+# End MAIN script section
+#=================================================================================
+#Log an event for script ending and total execution time.
+$EndTime = Get-Date
+$ScriptTime = ($EndTime - $StartTime).TotalSeconds
+$momapi.LogScriptEvent($ScriptName,$EventID,0,"`nScript Completed. `nRuntime: ($ScriptTime) seconds.")
+#=================================================================================
+# End of script
+</ScriptBody>
+					<Parameters>
+						<Parameter>
+							<Name>sourceId</Name>
+							<Value>$MPElement$</Value>
+						</Parameter>
+						<Parameter>
+							<Name>managedEntityId</Name>
+							<Value>$Target/Id$</Value>
+						</Parameter>
+						<Parameter>
+							<Name>computerName</Name>
+							<Value>$Target/Host/Property[Type="Windows!Microsoft.Windows.Computer"]/PrincipalName$</Value>
+						</Parameter>
+					</Parameters>
+					<TimeoutSeconds>300</TimeoutSeconds>
+					<StrictErrorHandling>false</StrictErrorHandling>
 				</DataSource>
 			</Discovery>
 			<Discovery ID="Custom.Veeam.Backups.VeeamTransportSvc.Registry.Class.Discovery" Comment="&lt;Silect&gt;&lt;Op&gt;Edited&lt;/Op&gt;&lt;User&gt;David Smith&lt;/User&gt;&lt;Previous&gt;DisplayName=Custom VeeamTransportSvc Registry Class Discovery&lt;/Previous&gt;&lt;LastModified&gt;2023-09-27 15:33:05Z&lt;/LastModified&gt;&lt;/Silect&gt;" Enabled="true" Target="Windows!Microsoft.Windows.OperatingSystem" ConfirmDelivery="false" Remotable="true" Priority="Normal">
@@ -1564,36 +1564,6 @@ $momapi.LogScriptEvent($ScriptName,$EventID,0,"`nScript Completed. `nRuntime: ($
 					<CheckStartupType></CheckStartupType>
 				</Configuration>
 			</UnitMonitor>
-			<UnitMonitor ID="Custom.Veeam.Backups.vbkpSQLServer.Class.PingCheckResponse.WMI.Monitor" Comment="&lt;Silect&gt;&lt;Op&gt;Edited&lt;/Op&gt;&lt;User&gt;YHSMASTER\dsmith14admin&lt;/User&gt;&lt;Previous&gt;Accessibility=Public&lt;/Previous&gt;&lt;LastModified&gt;2024-03-25 18:03:08Z&lt;/LastModified&gt;&lt;/Silect&gt;" Accessibility="Internal" Enabled="true" Target="Custom.Veeam.Backups.vbkpSQLServer.Class" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" TypeID="Windows!Microsoft.Windows.WmiBased.Performance.AverageThreshold" ConfirmDelivery="false">
-				<Category>AvailabilityHealth</Category>
-				<AlertSettings AlertMessage="Custom.Veeam.Backups.Custom.Veeam.BackupJobs.LocalApplication.Hosted.Class.WMI.Performance.Monitor.Alert.Message">
-					<AlertOnState>Error</AlertOnState>
-					<AutoResolve>true</AutoResolve>
-					<AlertPriority>Normal</AlertPriority>
-					<AlertSeverity>MatchMonitorHealth</AlertSeverity>
-					<AlertParameters>
-						<AlertParameter1>$Data/Context/ObjectName$</AlertParameter1>
-						<AlertParameter2>$Data/Context/CounterName$</AlertParameter2>
-						<AlertParameter3>$Data/Context/SampleValue$</AlertParameter3>
-						<AlertParameter4>$Data/Context/TimeSampled$</AlertParameter4>
-					</AlertParameters>
-				</AlertSettings>
-				<OperationalStates>
-					<OperationalState ID="UnderThreshold" MonitorTypeStateID="UnderThreshold" HealthState="Success" />
-					<OperationalState ID="OverThreshold" MonitorTypeStateID="OverThreshold" HealthState="Error" />
-				</OperationalStates>
-				<Configuration>
-					<NameSpace>root\cimv2</NameSpace>
-					<Query>SELECT * FROM Win32_PingStatus WHERE Address='$Target/Property[Type="System!System.Entity"]/DisplayName$'</Query>
-					<Frequency>300</Frequency>
-					<ObjectName>tcpPingCheck</ObjectName>
-					<CounterName>PingCheckResponse</CounterName>
-					<InstanceName></InstanceName>
-					<Value>$Data/Property[@Name='StatusCode']$</Value>
-					<Threshold>0</Threshold>
-					<NumSamples>5</NumSamples>
-				</Configuration>
-			</UnitMonitor>
 			<UnitMonitor ID="Custom.Veeam.Backups.VeeamBackupSvc.Registry.Class.VeeamBackupCdpSvc.Service.Monitor" Comment="&lt;Silect&gt;&lt;Op&gt;Edited&lt;/Op&gt;&lt;User&gt;YHSMASTER\dsmith14admin&lt;/User&gt;&lt;Previous&gt;Comment=&lt;Silect&gt;&lt;Op&gt;Edited&lt;/Op&gt;&lt;User&gt;YHSMASTER\dsmith14admin&lt;/User&gt;&lt;LastModified&gt;2024-03-25 16:29:33Z&lt;/LastModified&gt;&lt;/Silect&gt;" Accessibility="Public" Enabled="true" Target="Custom.Veeam.Backups.VeeamBackupSvc.Registry.Class" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" TypeID="Windows!Microsoft.Windows.CheckNTServiceStateMonitorType" ConfirmDelivery="false">
 				<Category>AvailabilityHealth</Category>
 				<AlertSettings AlertMessage="Custom.Veeam.Backups.VeeamBackupSvc.Registry.Class.VeeamBackupCdpSvc.Service.Monitor.Alert.Message">
@@ -1966,6 +1936,36 @@ $momapi.LogScriptEvent($ScriptName,$EventID,0,"`nScript Completed. `nRuntime: ($
 					<ComputerName>$Target/Host/Property[Type="Windows!Microsoft.Windows.Computer"]/NetworkName$</ComputerName>
 					<ServiceName>VeeamRESTSvc</ServiceName>
 					<CheckStartupType></CheckStartupType>
+				</Configuration>
+			</UnitMonitor>
+			<UnitMonitor ID="Custom.Veeam.Backups.VeeamSQLServer.Class.PingCheckResponse.WMI.Monitor" Comment="&lt;Silect&gt;&lt;Op&gt;Edited&lt;/Op&gt;&lt;User&gt;YHSMASTER\dsmith14admin&lt;/User&gt;&lt;Previous&gt;Accessibility=Public&lt;/Previous&gt;&lt;LastModified&gt;2024-03-25 18:03:08Z&lt;/LastModified&gt;&lt;/Silect&gt;" Accessibility="Internal" Enabled="true" Target="Custom.Veeam.Backups.VeeamSQLServer.Class" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" TypeID="Windows!Microsoft.Windows.WmiBased.Performance.AverageThreshold" ConfirmDelivery="false">
+				<Category>AvailabilityHealth</Category>
+				<AlertSettings AlertMessage="Custom.Veeam.Backups.Custom.Veeam.BackupJobs.LocalApplication.Hosted.Class.WMI.Performance.Monitor.Alert.Message">
+					<AlertOnState>Error</AlertOnState>
+					<AutoResolve>true</AutoResolve>
+					<AlertPriority>Normal</AlertPriority>
+					<AlertSeverity>MatchMonitorHealth</AlertSeverity>
+					<AlertParameters>
+						<AlertParameter1>$Data/Context/ObjectName$</AlertParameter1>
+						<AlertParameter2>$Data/Context/CounterName$</AlertParameter2>
+						<AlertParameter3>$Data/Context/SampleValue$</AlertParameter3>
+						<AlertParameter4>$Data/Context/TimeSampled$</AlertParameter4>
+					</AlertParameters>
+				</AlertSettings>
+				<OperationalStates>
+					<OperationalState ID="UnderThreshold" MonitorTypeStateID="UnderThreshold" HealthState="Success" />
+					<OperationalState ID="OverThreshold" MonitorTypeStateID="OverThreshold" HealthState="Error" />
+				</OperationalStates>
+				<Configuration>
+					<NameSpace>root\cimv2</NameSpace>
+					<Query>SELECT * FROM Win32_PingStatus WHERE Address='$Target/Property[Type="System!System.Entity"]/DisplayName$'</Query>
+					<Frequency>300</Frequency>
+					<ObjectName>tcpPingCheck</ObjectName>
+					<CounterName>PingCheckResponse</CounterName>
+					<InstanceName></InstanceName>
+					<Value>$Data/Property[@Name='StatusCode']$</Value>
+					<Threshold>0</Threshold>
+					<NumSamples>5</NumSamples>
 				</Configuration>
 			</UnitMonitor>
 			<UnitMonitor ID="Custom.Veeam.Backups.VeeamTransportSvc.Registry.Class.VeeamDeploySvc.Service.Monitor" Comment="&lt;Silect&gt;&lt;Op&gt;Edited&lt;/Op&gt;&lt;User&gt;YHSMASTER\dsmith14admin&lt;/User&gt;&lt;Previous&gt;Comment=&lt;Silect&gt;&lt;Op&gt;Edited&lt;/Op&gt;&lt;User&gt;YHSMASTER\dsmith14admin&lt;/User&gt;&lt;Previous&gt;DisplayName=&lt;/Previous&gt;&lt;LastModified&gt;2024-03-25 16:26:45Z&lt;/LastModified&gt;&lt;/Silect&gt;" Accessibility="Public" Enabled="true" Target="Custom.Veeam.Backups.VeeamTransportSvc.Registry.Class" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" TypeID="Windows!Microsoft.Windows.CheckNTServiceStateMonitorType" ConfirmDelivery="false">
@@ -3010,13 +3010,13 @@ $momapi.LogScriptEvent($ScriptName,$EventID,0,"`nScript Completed. `nRuntime: ($
 					</ColumnInfo>
 				</Presentation>
 			</View>
-			<View ID="Custom.Veeam.Backups.vbkpSQLServer.Class.All.State.View" Comment="&lt;Silect&gt;&lt;Op&gt;Edited&lt;/Op&gt;&lt;User&gt;YHSMASTER\dsmith14admin&lt;/User&gt;&lt;Previous&gt;DisplayName=vbkpSQLServer Class&lt;/Previous&gt;&lt;LastModified&gt;2024-03-22 19:36:29Z&lt;/LastModified&gt;&lt;/Silect&gt;" Accessibility="Public" Enabled="true" Target="Custom.Veeam.Backups.vbkpSQLServer.Class" TypeID="SC!Microsoft.SystemCenter.StateViewType" Visible="true">
+			<View ID="Custom.Veeam.Backups.VeeamSQLServer.Class.All.State.View" Comment="&lt;Silect&gt;&lt;Op&gt;Edited&lt;/Op&gt;&lt;User&gt;YHSMASTER\dsmith14admin&lt;/User&gt;&lt;Previous&gt;DisplayName=VeeamSQLServer Class&lt;/Previous&gt;&lt;LastModified&gt;2024-03-22 19:36:29Z&lt;/LastModified&gt;&lt;/Silect&gt;" Accessibility="Public" Enabled="true" Target="Custom.Veeam.Backups.VeeamSQLServer.Class" TypeID="SC!Microsoft.SystemCenter.StateViewType" Visible="true">
 				<Category>Operations</Category>
 				<Criteria></Criteria>
 				<Presentation>
 					<ColumnInfo Grouped="false" Index="0" IsSortable="true" SortIndex="-1" SortOrder="Descending" Sorted="false" Visible="true" Width="100">
 						<Name>State</Name>
-						<Id>Custom.Veeam.Backups.vbkpSQLServer.Class</Id>
+						<Id>Custom.Veeam.Backups.VeeamSQLServer.Class</Id>
 					</ColumnInfo>
 					<ColumnInfo Grouped="false" Index="1" IsSortable="true" SortIndex="-1" SortOrder="Ascending" Sorted="false" Visible="true" Width="22">
 						<Name>Maintenance Mode</Name>
@@ -3036,11 +3036,11 @@ $momapi.LogScriptEvent($ScriptName,$EventID,0,"`nScript Completed. `nRuntime: ($
 					</ColumnInfo>
 					<ColumnInfo Grouped="false" Index="5" IsSortable="true" SortIndex="-1" SortOrder="Ascending" Sorted="false" Visible="false" Width="100">
 						<Name>DateStamp</Name>
-						<Id>Custom.Veeam.Backups.vbkpSQLServer.Class/DateStamp</Id>
+						<Id>Custom.Veeam.Backups.VeeamSQLServer.Class/DateStamp</Id>
 					</ColumnInfo>
 					<ColumnInfo Grouped="false" Index="6" IsSortable="true" SortIndex="-1" SortOrder="Ascending" Sorted="false" Visible="false" Width="100">
 						<Name>VeeamBackupServer</Name>
-						<Id>Custom.Veeam.Backups.vbkpSQLServer.Class/VeeamBackupServer</Id>
+						<Id>Custom.Veeam.Backups.VeeamSQLServer.Class/VeeamBackupServer</Id>
 					</ColumnInfo>
 				</Presentation>
 			</View>
@@ -3085,7 +3085,7 @@ $momapi.LogScriptEvent($ScriptName,$EventID,0,"`nScript Completed. `nRuntime: ($
 			<FolderItem ElementID="Custom.Veeam.Backups.Custom.Veeam.ReplicationJobs.LocalApplication.Hosted.Class.All.State.View" ID="Custom.Veeam.Backups.Custom.Veeam.ReplicationJobs.LocalApplication.Hosted.Class.All.State.View.FolderItem" Folder="Custom.Veeam.Backups.Microsoft.SystemCenter.Monitoring.ViewFolder.Root.Folder" />
 			<FolderItem ElementID="Custom.Veeam.Backups.Custom.Veeam.FileCopyJobs.LocalApplication.Hosted.Class.All.State.View" ID="Custom.Veeam.Backups.Custom.Veeam.FileCopyJobs.LocalApplication.Hosted.Class.All.State.View.FolderItem" Folder="Custom.Veeam.Backups.Microsoft.SystemCenter.Monitoring.ViewFolder.Root.Folder" />
 			<FolderItem ElementID="Custom.Veeam.BackupJobs.LocalApplication.Hosted.Class.Alert.View" ID="Custom.Veeam.BackupJobs.LocalApplication.Hosted.Class.Alert.View.FolderItem" Folder="Custom.Veeam.Backups.Microsoft.SystemCenter.Monitoring.ViewFolder.Root.Folder" />
-			<FolderItem ElementID="Custom.Veeam.Backups.vbkpSQLServer.Class.All.State.View" ID="Custom.Veeam.Backups.vbkpSQLServer.Class.All.State.View.FolderItem" Folder="Custom.Veeam.Backups.Microsoft.SystemCenter.Monitoring.ViewFolder.Root.Folder" />
+			<FolderItem ElementID="Custom.Veeam.Backups.VeeamSQLServer.Class.All.State.View" ID="Custom.Veeam.Backups.VeeamSQLServer.Class.All.State.View.FolderItem" Folder="Custom.Veeam.Backups.Microsoft.SystemCenter.Monitoring.ViewFolder.Root.Folder" />
 			<FolderItem ElementID="Custom.Veeam.Backups.Microsoft.Windows.ComputerRole.All.State.View" ID="Custom.Veeam.Backups.Microsoft.Windows.ComputerRole.All.State.View.FolderItem" Folder="Custom.Veeam.Backups.Microsoft.SystemCenter.Monitoring.ViewFolder.Root.Folder" />
 		</FolderItems>
 		<StringResources>
@@ -3230,7 +3230,7 @@ Event Description: {0}
 					<Description>Created by David Smith at 2023-09-14 11:42:15 using MP Studio</Description>
 				</DisplayString>
 				<DisplayString ElementID="Custom.Veeam.Backups.Custom.Veeam.BackupJobs.LocalApplication.Hosted.Class.WMI.Performance.Monitor.Alert.Message">
-					<Name>vbkpSQLServer Class PingCheckResponse WMI Monitor: Failure</Name>
+					<Name>VeeamSQLServer Class PingCheckResponse WMI Monitor: Failure</Name>
 					<Description>Object {0}
 Counter {1}
 Has value {2}
@@ -3272,40 +3272,6 @@ At time {3}</Description>
 				<DisplayString ElementID="Custom.Veeam.Backups.Microsoft.Windows.ComputerRole.All.State.View">
 					<Name>All Servers</Name>
 					<Description>Created by YHSMASTER\dsmith14admin at 2024-03-25 12:44:17 using MP Studio</Description>
-				</DisplayString>
-				<DisplayString ElementID="Custom.Veeam.Backups.vbkpSQLServer.Class">
-					<Name>vbkpSQLServer Class</Name>
-					<Description>Created by YHSMASTER\dsmith14admin at 2024-03-22 13:16:19 using MP Studio</Description>
-				</DisplayString>
-				<DisplayString ElementID="Custom.Veeam.Backups.vbkpSQLServer.Class.All.State.View">
-					<Name>SQL Server Class</Name>
-					<Description>Created by YHSMASTER\dsmith14admin at 2024-03-22 15:35:18 using MP Studio</Description>
-				</DisplayString>
-				<DisplayString ElementID="Custom.Veeam.Backups.vbkpSQLServer.Class.Discovery">
-					<Name>vbkpSQLServer Class Discovery</Name>
-					<Description>Created by YHSMASTER\dsmith14admin at 2024-03-22 13:16:33 using MP Studio</Description>
-				</DisplayString>
-				<DisplayString ElementID="Custom.Veeam.Backups.vbkpSQLServer.Class.PingCheckResponse.WMI.Monitor">
-					<Name>vbkpSQLServer Class PingCheckResponse WMI Monitor</Name>
-					<Description>Created by YHSMASTER\dsmith14admin at 2024-03-25 13:53:10 using MP Studio</Description>
-				</DisplayString>
-				<DisplayString ElementID="Custom.Veeam.Backups.vbkpSQLServer.Class.PingCheckResponse.WMI.Monitor" SubElementID="OverThreshold">
-					<Name>Over Threshold</Name>
-				</DisplayString>
-				<DisplayString ElementID="Custom.Veeam.Backups.vbkpSQLServer.Class.PingCheckResponse.WMI.Monitor" SubElementID="UnderThreshold">
-					<Name>Under Threshold</Name>
-				</DisplayString>
-				<DisplayString ElementID="Custom.Veeam.Backups.vbkpSQLServer.Class" SubElementID="Description">
-					<Name>Description</Name>
-				</DisplayString>
-				<DisplayString ElementID="Custom.Veeam.Backups.vbkpSQLServer.Class" SubElementID="DisplayName">
-					<Name>DisplayName</Name>
-				</DisplayString>
-				<DisplayString ElementID="Custom.Veeam.Backups.vbkpSQLServer.Class" SubElementID="ImagePath">
-					<Name>ImagePath</Name>
-				</DisplayString>
-				<DisplayString ElementID="Custom.Veeam.Backups.vbkpSQLServer.Class" SubElementID="ObjectName">
-					<Name>ObjectName</Name>
 				</DisplayString>
 				<DisplayString ElementID="Custom.Veeam.Backups.VeeamBackupSvc.Registry.Class">
 					<Name>VeeamBackupSvc Registry Class</Name>
@@ -3605,6 +3571,40 @@ At time {3}</Description>
 				<DisplayString ElementID="Custom.Veeam.Backups.VeeamEnterpriseManagerSvc.Registry.Class" SubElementID="ObjectName">
 					<Name>ObjectName</Name>
 					<Description>Created by David Smith at 2023-09-14 10:21:14 using MP Studio</Description>
+				</DisplayString>
+				<DisplayString ElementID="Custom.Veeam.Backups.VeeamSQLServer.Class">
+					<Name>VeeamSQLServer Class</Name>
+					<Description>Created by YHSMASTER\dsmith14admin at 2024-03-22 13:16:19 using MP Studio</Description>
+				</DisplayString>
+				<DisplayString ElementID="Custom.Veeam.Backups.VeeamSQLServer.Class.All.State.View">
+					<Name>SQL Server Class</Name>
+					<Description>Created by YHSMASTER\dsmith14admin at 2024-03-22 15:35:18 using MP Studio</Description>
+				</DisplayString>
+				<DisplayString ElementID="Custom.Veeam.Backups.VeeamSQLServer.Class.Discovery">
+					<Name>VeeamSQLServer Class Discovery</Name>
+					<Description>Created by YHSMASTER\dsmith14admin at 2024-03-22 13:16:33 using MP Studio</Description>
+				</DisplayString>
+				<DisplayString ElementID="Custom.Veeam.Backups.VeeamSQLServer.Class.PingCheckResponse.WMI.Monitor">
+					<Name>VeeamSQLServer Class PingCheckResponse WMI Monitor</Name>
+					<Description>Created by YHSMASTER\dsmith14admin at 2024-03-25 13:53:10 using MP Studio</Description>
+				</DisplayString>
+				<DisplayString ElementID="Custom.Veeam.Backups.VeeamSQLServer.Class.PingCheckResponse.WMI.Monitor" SubElementID="OverThreshold">
+					<Name>Over Threshold</Name>
+				</DisplayString>
+				<DisplayString ElementID="Custom.Veeam.Backups.VeeamSQLServer.Class.PingCheckResponse.WMI.Monitor" SubElementID="UnderThreshold">
+					<Name>Under Threshold</Name>
+				</DisplayString>
+				<DisplayString ElementID="Custom.Veeam.Backups.VeeamSQLServer.Class" SubElementID="Description">
+					<Name>Description</Name>
+				</DisplayString>
+				<DisplayString ElementID="Custom.Veeam.Backups.VeeamSQLServer.Class" SubElementID="DisplayName">
+					<Name>DisplayName</Name>
+				</DisplayString>
+				<DisplayString ElementID="Custom.Veeam.Backups.VeeamSQLServer.Class" SubElementID="ImagePath">
+					<Name>ImagePath</Name>
+				</DisplayString>
+				<DisplayString ElementID="Custom.Veeam.Backups.VeeamSQLServer.Class" SubElementID="ObjectName">
+					<Name>ObjectName</Name>
 				</DisplayString>
 				<DisplayString ElementID="Custom.Veeam.Backups.VeeamTransportSvc.Registry.Class">
 					<Name>VeeamTransportSvc Registry Class</Name>
